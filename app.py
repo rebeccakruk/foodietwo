@@ -1,6 +1,5 @@
 from flask import Flask, make_response, jsonify, request
 from dbcreds import production_mode
-import json
 from dbhelpers import run_statement, connect_db
 import uuid
 
@@ -33,9 +32,27 @@ def login_client():
             response.append(dict(zip(keys, data)))
             return make_response(jsonify(response), 200)
     else:
-        return "oops"
+        return "Something went wrong, please try again"
 
-
+@app.post('/api/client')
+def client_register():
+    email = request.json.get("email")
+    password = request.json.get("password")
+    firstName = request.json.get("first_name")
+    lastName = request.json.get("last_name")
+    username = request.json.get("username")
+    token = uuid.uuid4().hex
+    # pictureUrl = request.json.get("pictureUrl")
+    keys = ["clientId", "token"]
+    response = []
+    results = run_statement("CALL new_client(?, ?, ?, ?, ?, ?)", [email, password, firstName, lastName, username, token])
+    # results = run_statement("CALL new_client(?, ?, ?, ?, ?, ?, ?)", [token, email, username, firstName, lastName, password, pictureUrl])
+    if (type(results) == list):
+        for data in results:
+            response.append(dict(zip(keys, data)))
+            return make_response(jsonify(response), 200)
+    else:
+        return "Something went wrong, please try again"
 
 if (production_mode == True):
     print("Running server in production mode")

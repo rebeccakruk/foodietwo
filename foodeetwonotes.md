@@ -83,3 +83,9 @@ implemented one end-point. DB, procedure, error handling, etc.
 
 Today's plan is to work on the projects; depending on how people are doing. A short presentation for things that we should probably know related to password incriptions and stuff like that.
 
+There has been problems with making the logical connection with the login procedure.
+
+One thing - the client post is also generating a token but to simplify the logic. It creates a user then logs in that user. You can simplify that into two procedure calls, with the same procedure that would log them in.
+Somehow the logical connection. Assuming you have a way to login a user (check how to check if correct), once you've implemented that procedure, then you can use that procedure as the second part of the registration procedure. Internally it happens in two steps; there is a way to do it in a single step. Remember that you can call procedures from other procedure. Register user, then does the login procedure.
+
+Once you have the client and restaurant logins, start on the menu.
