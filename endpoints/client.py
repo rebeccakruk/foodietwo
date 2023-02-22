@@ -1,10 +1,8 @@
-from flask import Flask, make_response, jsonify, request
-from dbcreds import production_mode
-from dbhelpers import run_statement, connect_db
+from app import app
+from flask import jsonify, make_response, request
+from dbhelpers import run_statement
 import uuid
 
-app = Flask(__name__)
-connect_db()
 @app.get('/api/client')
 def get_client():
     result = run_statement("CALL get_client")
@@ -53,13 +51,3 @@ def client_register():
             return make_response(jsonify(response), 200)
     else:
         return "Something went wrong, please try again"
-
-if (production_mode == True):
-    print("Running server in production mode")
-    import bjoern #type:ignore
-    bjoern.run(app, "0.0.0.0", 5000)
-else:
-    print("Running in testing mode")
-    from flask_cors import CORS
-    CORS(app)
-app.run(debug=True)
