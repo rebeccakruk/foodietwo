@@ -1,4 +1,4 @@
-from app import app
+from app import app, __init__
 from dbcreds import production_mode
 
 if (production_mode == True):
