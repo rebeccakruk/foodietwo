@@ -194,3 +194,15 @@ library! import bcrypt
 
 
 rounds controls the complexity and time of SALT
+
+simplest solution is to have two procedures that will be run back to back. assume you already have the user registered in your system. what you're going to do is the first make a call that extracts an id and password for an email. Single argument. Then compare the password to the on that was provided in the login attempt.
+
+next step, once verified. you have another procedure that returns the id and the token, the package it into a response object, and the response object gets to the API call.
+
+THE CORRECT VERSION IS THE ONE THAT WAS ORIGINALLY IN THE SLIDES WHERE YOU ENCODE THE SECOND PASSWORD AS WELL. THE REASON WHY IT DIDN'T WORK IN THE EXAMPLE IS BECAUSE IT WAS ALREADY ENCODED. WHEN IT COMES FROM THE DB, IT COMES AS A STRING. THEN YOU TURN IT INTO ENCODING.
+
+another point made was related to tokens. tokens allow the user to do the operation that they're trying to do. part of the marks for the assignment is for security. for example if you're trying to update a menu, make sure you're the owner of the menu. the step is to check what the id of the owner of the token, if they correspond, then they're allowed to do the operation.
+
+send an error message to users trying to change others' info. check the tokens!
+
+
