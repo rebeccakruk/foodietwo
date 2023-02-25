@@ -29,12 +29,17 @@ def login_client():
     else:
         return "Please provide a valid password"
     
-@app.post('/api/client-login')
+@app.delete('/api/client-login')
 def logout_client():
     token = request.args.get("token")
-    result = run_statement("CALL logout_client(?)", [token])
+    result = run_statement("CALL get_session_id(?)", [token])
     if token == None:
         return "You are already signed out."
+    elif result == []:
+        return "You are already signed out."
+    elif (type(result) == list):
+        id = result[0][0]
+    result = run_statement("CALL logout_client(?)", [id])
     if result == None:
         return "Sign out successful."
     else:
