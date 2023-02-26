@@ -31,7 +31,7 @@ def login_client():
     
 @app.delete('/api/client-login')
 def logout_client():
-    token = request.args.get("token")
+    token = request.json.get("token")
     result = run_statement("CALL get_session_id(?)", [token])
     if token == None:
         return "You are already signed out."

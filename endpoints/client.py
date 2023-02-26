@@ -54,7 +54,7 @@ def get_client():
 
 @app.patch('/api/client')
 def update_client():
-    token = request.args.get("token")
+    token = request.json.get("token")
     result = run_statement("CALL get_id_with_token(?)", [token])
     if token == None:
         return "You are not logged in. Please login to update your client information."
@@ -81,7 +81,7 @@ def update_client():
     
 @app.delete('/api/client')
 def client_delete():
-    token = request.args.get("token")
+    token = request.json.get("token")
     result = run_statement("CALL get_id_with_token(?)", [token])
     if (type(result) == list):
         client_id = result[0][0]
