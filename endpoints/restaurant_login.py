@@ -1,8 +1,8 @@
 from app import app, __init__
 from flask import jsonify, make_response, request
 from dbhelpers import run_statement
-import bcrypt
 import uuid
+import bcrypt
 
 @app.post('/api/restaurant-login')
 def login_restaurant():
@@ -28,3 +28,19 @@ def login_restaurant():
             return make_response(jsonify(response), 200)
     else:
         return "Please provide a valid password"
+    
+@app.delete('/api/restaurant-login')
+def logout_restaurant():
+    token = request.json.get("token")
+    result = run_statement("CALL get_resto_session_id(?)", [token])
+    if token == None:
+        return "You are already signed out."
+    elif result == []:
+        return "You are already signed out."
+    elif (type(result) == list):
+        id = result[0][0]
+    result = run_statement("CALL logout_resto(?)", [id])
+    if result == None:
+        return "Sign out successful."
+    else:
+        return "Please try again."
