@@ -32,7 +32,6 @@ def add_to_menu():
 def get_menu():
     resto_id = request.args.get("restaurantId")
     menu_id = request.args.get("menuId")
-    # menu_item = (str(menu_id))
     response = []
     keys = ["description", "imageUrl", "menuId", "name", "price", "restaurantId"]
     if resto_id != None and menu_id == None:
@@ -69,6 +68,25 @@ def get_menu():
             return make_response(jsonify(response), 200)
     else:
         return make_response(jsonify(result), 500)
+
+@app.patch('/api/menu')
+def edit_menu():
+    token = request.json.get("token")
+    result = run_statement("CALL get_resto_id_with_token(?)", [token])
+    if token == None:
+        return "You are not logged in. Please login to delete items from the menu."
+    if (type(result) == list):
+        resto_id = result[0][0]
+    menu_id = request.json.get("menuId")
+    name = request.json.get("name")
+    description = request.json.get("description")
+    price = request.json.get("price")
+    image_url = request.json.get("imageUrl")
+    result = run_statement("CALL edit_menu(?, ?, ?, ?, ?, ?)", [resto_id, menu_id, name, description, price, image_url])
+    if result == None:
+        return f"You've successfully updated {name} on your menu."
+    else:
+        return "Please try again."
 
 @app.delete('/api/menu')
 def delete_item():
