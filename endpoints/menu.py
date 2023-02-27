@@ -70,7 +70,7 @@ def get_menu():
     else:
         return make_response(jsonify(result), 500)
 
-app.delete('/api/menu')
+@app.delete('/api/menu')
 def delete_item():
     token = request.json.get("token")
     result = run_statement("CALL get_resto_id_with_token(?)", [token])
@@ -78,15 +78,25 @@ def delete_item():
         return "You are not logged in. Please login to delete items from the menu."
     if (type(result) == list):
         resto_id = result[0][0]
-    menu_id = request.json.get("menuId")
-    result = run_statement("CALL delete_menu_item(?)", [menu_id, resto_id])
-    if result == None:
-        return f"You have successfully deleted {menu_id} from your menu!"
-    elif "Data too long for column 'username_input'" in result:
-        return "Your username is too long. Please choose another username. (maximum 100 characters)"
-    elif "Data too long for column 'first_name_input' at row 0" in result:
-        return "Your first name is too long, please check your entry and try again. (maximum 50 characters)"
-    elif "Data too long for column 'last_name_input' at row 0" in result:
-        return "Your last name is too long, please check your entry and try again. (maximum 50 characters)"
+        menu_id = request.json.get("menuId")
+        selection = run_statement("CALL get_menu(?, ?)", [resto_id, menu_id])
+        if selection == []:
+            option = run_statement("CALL item_lookup(?, ?)", [resto_id, menu_id])
+            if (type(option) == list):
+                food_name = option[0][0]
+            return f"You cannot delete {food_name}; it is not from your restaurant. Please make another selection."
+        elif (type(selection) == list):
+            option = run_statement("CALL item_lookup(?, ?)", [resto_id, menu_id])
+            if (type(option) == list):
+                food_name = option[0][0]
+            result = run_statement("CALL delete_menu_item(?, ?)", [menu_id, resto_id])
+            if result == None:
+                return f"You have successfully deleted {food_name} from your menu!"
+    # elif "Data too long for column 'username_input'" in result:
+    #     return "Your username is too long. Please choose another username. (maximum 100 characters)"
+    # elif "Data too long for column 'first_name_input' at row 0" in result:
+    #     return "Your first name is too long, please check your entry and try again. (maximum 50 characters)"
+    # elif "Data too long for column 'last_name_input' at row 0" in result:
+    #     return "Your last name is too long, please check your entry and try again. (maximum 50 characters)"
     else:
         return "Please try again"
