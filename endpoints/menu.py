@@ -61,14 +61,32 @@ def get_menu():
                 for data in result:
                     response.append(dict(zip(keys, data)))
                 return make_response(jsonify(response), 200)
-        # elif result == None:
-        #     selection = run_statement("CALL item_lookup(?, ?)", [resto_id, menu_id])
-    if (type(selection) == list):
-        if resto_id == None and menu_id == None:
-            result = run_statement("CALL get_menu(?, ?)", [resto_id, menu_id])
+    if resto_id == None and menu_id == None:
+        result = run_statement("CALL get_menu(?, ?)", [resto_id, menu_id])
         if (type(result) == list):
             for data in result:
                 response.append(dict(zip(keys, data)))
             return make_response(jsonify(response), 200)
     else:
         return make_response(jsonify(result), 500)
+
+app.delete('/api/menu')
+def delete_item():
+    token = request.json.get("token")
+    result = run_statement("CALL get_resto_id_with_token(?)", [token])
+    if token == None:
+        return "You are not logged in. Please login to delete items from the menu."
+    if (type(result) == list):
+        resto_id = result[0][0]
+    menu_id = request.json.get("menuId")
+    result = run_statement("CALL delete_menu_item(?)", [menu_id, resto_id])
+    if result == None:
+        return f"You have successfully deleted {menu_id} from your menu!"
+    elif "Data too long for column 'username_input'" in result:
+        return "Your username is too long. Please choose another username. (maximum 100 characters)"
+    elif "Data too long for column 'first_name_input' at row 0" in result:
+        return "Your first name is too long, please check your entry and try again. (maximum 50 characters)"
+    elif "Data too long for column 'last_name_input' at row 0" in result:
+        return "Your last name is too long, please check your entry and try again. (maximum 50 characters)"
+    else:
+        return "Please try again"
