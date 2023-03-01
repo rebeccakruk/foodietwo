@@ -205,4 +205,7 @@ another point made was related to tokens. tokens allow the user to do the operat
 
 send an error message to users trying to change others' info. check the tokens!
 
+# split into two procedures - remember auto-commit either every or notghin goes by not auto committing. only after every sinlge item has finished
+
+
 
