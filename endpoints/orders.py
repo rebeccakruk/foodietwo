@@ -28,15 +28,14 @@ def get_orders():
     token = request.json.get("token")
     order_id = request.args.get("orderId")
     response = []
-    items = []
     keys = ["clientId",
-        "createdAt",
         "isCancelled",
         "isComplete",
         "isConfirmed",
         "items",
         "orderId",
-        "restaurantId"]
+        "restaurantId",
+        ""]
     result = run_statement("CALL get_client(?)", [token])
     if token == None:
         return "You are not logged in. Please login to review see your orders."
@@ -44,12 +43,25 @@ def get_orders():
         client_id = result[0][0]
         result = run_statement("CALL get_order(?, ?)", [order_id, client_id])
         if (type(result) == list):
-            for data in result:
-                response.append(dict(zip(keys, data)))
-    result = run_statement("CALL get_menu_items(?)", [order_id])
-    if (type(result) == list):
-        for item in result:
-            items.extend(item)
-    response.insert(4, items)
-    print(response)
+            current_order = {}
+            for item in result:
+                current_order["orderId"] = item[5]
+                current_order["isCancelled"] = bool(item[1])
+                current_order["items"] = [
+                    item[4]
+                ]
+                if response != [] and item[5] == response[-1]["orderId"]:
+                    response[-1]["items"].append(item[4])
+                else:
+                    response.append(current_order)
+                    current_order = {}
+
+
+        
+    # result = run_statement("CALL get_menu_items(?)", [order_id])
+    # if (type(result) == list):
+    #     for item in result:
+    #         items.extend(item)
+    # response.insert(4, items)
+    # print(response)
     return make_response(jsonify(response), 200)
