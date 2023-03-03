@@ -22,7 +22,7 @@ def resto_register():
     token = uuid.uuid4().hex
     keys = ["restaurantId", "token"]
     response = []
-    results = run_statement("CALL new_restaurant(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, address, banner_url, bio, city, email, phone, password, profile_url, token])
+    results = run_statement("CALL new_restaurant(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [name, address, bio, city, email, password, phone, banner_url, profile_url, token])
     if (type(results) == list):
         for data in results:
             response.append(dict(zip(keys, data)))
@@ -57,7 +57,7 @@ def get_restaurant():
     
 @app.patch('/api/restaurant')
 def update_restaurant():
-    token = request.args.get("token")
+    token = request.json.get("token")
     result = run_statement("CALL get_resto_id_with_token(?)", [token])
     if token == None:
         return "You are not logged in. Please login to update your restaurant information."
