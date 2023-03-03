@@ -80,6 +80,27 @@ def get_orders():
                         response.append(current_order)
                         current_order = {}
                 return make_response(jsonify(response), 200)
+    elif client_login_check == 0 and resto_login_check != 0:
+        result = run_statement("CALL resto_get_order(?, ?)", [order_id, restaurant_id])
+        if (type(result) == list):
+                current_order = {}
+                for item in result:
+                    current_order["clientId"] = item[0]
+                    current_order["createdAt"] = item[1]
+                    current_order["orderId"] = item[6]
+                    current_order["isCancelled"] = bool(item[2])
+                    current_order["isComplete"] = bool(item[3])
+                    current_order["isConfirmed"] = bool(item[4])
+                    current_order["items"] = [
+                        item[5]
+                    ]
+                    current_order["restaurantId"] = item[7]
+                    if response != [] and item[6] == response[-1]["orderId"]:
+                        response[-1]["items"].append(item[5])
+                    else:
+                        response.append(current_order)
+                        current_order = {}
+                return make_response(jsonify(response), 200)
     elif "Incorrect integer value" in result:
         return "Please enter order ID number"
     else:

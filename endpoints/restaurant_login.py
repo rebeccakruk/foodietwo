@@ -33,14 +33,15 @@ def login_restaurant():
 def logout_restaurant():
     token = request.json.get("token")
     result = run_statement("CALL get_resto_session_id(?)", [token])
-    if token == None:
-        return "You are already signed out."
-    elif result == []:
-        return "You are already signed out."
-    elif (type(result) == list):
+    if (type(result) == list):
         id = result[0][0]
-    result = run_statement("CALL logout_resto(?)", [id])
-    if result == None:
-        return "Sign out successful."
+        if id == 0:
+            return "You are already signed out."
+        elif id != 0:
+            result = run_statement("CALL logout_resto(?)", [id])
+            if (type(result) == list):
+                logout = [0][0]
+                if logout == 0:
+                    return "You have successfully logged out."
     else:
         return "Please try again."
