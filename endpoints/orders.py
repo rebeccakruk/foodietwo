@@ -119,7 +119,7 @@ def update_order():
     restaurant_id = result [1][0]
     resto_login_check = result[1][0]
     if client_login_check > 1 and restaurant_id == None:
-        validate_order = run_statement("CALL check_order(?, ?, ?)", [client_id, restaurant_id, order_id])
+        validate_order = run_statement("CALL check_order(?, ?)", [client_id, order_id])
         if (type(validate_order) == list):
             validate_order = result [0][0]
             if validate_order < 1:
@@ -128,10 +128,10 @@ def update_order():
         if result == None:
             return "You have successfully cancelled your order."
     elif client_login_check < 1 and resto_login_check > 1:
-        validate_order = run_statement("CALL check_order(?, ?, ?)", [client_id, restaurant_id, order_id])
+        validate_order = run_statement("CALL resto_check_order(?, ?)", [restaurant_id, order_id])
         if (type(validate_order) == list):
-            validate_order = result [0][0]
-            if validate_order < 1:
+            order_exists = validate_order [0][0]
+            if order_exists < 1:
                 return f"You don't have any orders with id {order_id}. Please check your orders and try again."
         result = run_statement("CALL update_order(?, ?, ?, ?, ?, ?)", [client_id, order_id, restaurant_id, cancel_order, confirm_order, complete_order])
         if result == None:

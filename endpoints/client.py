@@ -39,7 +39,7 @@ def client_register():
 
 @app.get('/api/client')
 def get_client():
-    token = request.args.get("token")
+    token = request.json.get("token")
     result = run_statement("CALL get_client(?)", [token])
     if token == None:
         return "You are not logged in. Please login to access your information."

@@ -33,14 +33,15 @@ def login_client():
 def logout_client():
     token = request.json.get("token")
     result = run_statement("CALL get_session_id(?)", [token])
-    if token == None:
-        return "You are already signed out."
-    elif result == []:
-        return "You are already signed out."
-    elif (type(result) == list):
-        id = result[0][0]
-    result = run_statement("CALL logout_client(?)", [id])
-    if result == None:
-        return "Sign out successful."
+    if (type(result) == list):
+        if result == []:
+            return "You are already signed out."
+        session_id = result[0][0]
+        if session_id != 0:
+            result = run_statement("CALL logout_client(?)", [session_id])
+            if (type(result) == list):
+                logout = [0][0]
+                if logout == 0:
+                    return "You have successfully logged out."
     else:
         return "Please try again."

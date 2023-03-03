@@ -34,11 +34,11 @@ def logout_restaurant():
     token = request.json.get("token")
     result = run_statement("CALL get_resto_session_id(?)", [token])
     if (type(result) == list):
-        id = result[0][0]
-        if id == 0:
+        session_id = result[0][0]
+        if result == []:
             return "You are already signed out."
-        elif id != 0:
-            result = run_statement("CALL logout_resto(?)", [id])
+        elif session_id != 0:
+            result = run_statement("CALL logout_resto(?)", [session_id])
             if (type(result) == list):
                 logout = [0][0]
                 if logout == 0:
